@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IOT</title>
+    <link rel="manifest" href="/manifest.json" />
+    <script src="sw.js"></script>
+</head>
+<body>
+    <h1>IOT</h1>
+    <input type="date" id="date" />
+    <button onclick="send()">send</button>
+    <br />
+    <textarea id="messages" disabled></textarea>
+    <script>
+        // websocket url
+        const url = "wss://echo.websocket.org";
+        const socket = new WebSocket(url);
+        
+        socket.onopen = function(event){
+            console.log('connected', event);
+        };
+        socket.onclose = function(event){
+            console.log('disconnected', event);
+        };
+        socket.onmessage = function(event){
+            console.log('got message',event);
+            document.querySelector('#messages').value+=event.data;
+        };
+        
+        function send(e){
+            //get value from the input
+            const val = document.querySelector('#date').value;
+            //send value to socket
+            socket.send(val)
+        }
+    </script>
+    <!-- load the service worker -->
+    <script>
+        window.onload = () => {
+            "use strict";
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("./sw.js");
+            }
+        };
+    </script>
+</body>
+</html>
